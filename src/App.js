@@ -17,8 +17,8 @@ const App = () => {
 
   return (
     <React.Fragment>
-      {cartIsShown && <Cart />}
-      <Header />
+      {cartIsShown && <Cart onClose={hideCartHandler} />}
+      <Header onCartButtonClicked={showCartHandler} />
       <main>
         <Meals />
       </main>
