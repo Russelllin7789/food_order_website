@@ -34,6 +34,31 @@ const cartReducer = (state, action) => {
       totalAmount: updatedTotalAmount
     }
   }
+
+  if (action.type === 'REMOVE') {
+    // 1. filter out the existing item if item was already included within the cart
+    const existingItemIndex = state.items.findIndex(item => item.id === action.id)
+    const existingCartItem = state.items[existingItemIndex]
+    const updatedTotalAmount = state.totalAmount - existingCartItem.price
+
+    let updatedItems
+
+    if (existingCartItem.amount === 1) {
+      // 2-1. if item amount equals to 1, then delete the whole item 
+      updatedItems = state.items.filter(item => item.id !== action.id)
+    } else {
+      // 2-2. if item amount is greater than 1, then the item amount simply minus 1
+      const updatedItem = { ...existingCartItem, amount: existingCartItem.amount - 1 }
+      updatedItems = [...state.items]
+      updatedItems[existingItemIndex] = updatedItem
+    }
+
+    return {
+      items: updatedItems,
+      totalAmount: updatedTotalAmount
+    }
+  }
+
   return defaultCartState
 }
 
