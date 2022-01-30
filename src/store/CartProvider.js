@@ -9,8 +9,26 @@ const defaultCartState = {
 const cartReducer = (state, action) => {
   // modify the state object like defaultCartState's structure
   if (action.type === 'ADD') {
-    const updatedItems = state.items.concat(action.item)
     const updatedTotalAmount = state.totalAmount + action.item.price * action.item.amount
+
+    // 1. filter out the existing item if item was already included within the cart
+    const existingItemIndex = state.items.findIndex(item => item.id === action.item.id)
+    const existingCartItem = state.items[existingItemIndex]
+    let updatedItems
+
+    if (existingCartItem) {
+      // 2-1. update the item that was already included in the cart first, then update the whole cart
+      const updatedItem = {
+        ...existingCartItem,
+        amount: existingCartItem.amount + action.item.amount
+      }
+      updatedItems = [...state.items]
+      updatedItems[existingItemIndex] = updatedItem
+    } else {
+      // 2-2. update the whole cart if the item was never included before
+      updatedItems = state.items.concat(action.item)
+    }
+
     return {
       items: updatedItems,
       totalAmount: updatedTotalAmount
