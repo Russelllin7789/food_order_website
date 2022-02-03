@@ -7,6 +7,7 @@ import MealItem from "./MealItem/MealItem";
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [httpError, setHttpError] = useState() // undefined
 
   // useEffect should not return a promise, so you cannot directly add async infront of the arrow func
   useEffect(() => {
@@ -28,13 +29,24 @@ const AvailableMeals = () => {
       setIsLoading(false)
     }
 
-    fetchMeals()
+    fetchMeals().catch((error) => {
+      setIsLoading(false)
+      setHttpError(error.message)
+    })
   }, [])
 
   if (isLoading) {
     return (
       <section className={classes.MealsLoading}>
         <p>Loading...</p>
+      </section>
+    )
+  }
+
+  if (httpError) {
+    return (
+      <section className={classes.MealsError}>
+        <p>{httpError}</p>
       </section>
     )
   }
@@ -58,7 +70,6 @@ const AvailableMeals = () => {
         </ul>
       </Card>
     </section>
-
   )
 }
 
